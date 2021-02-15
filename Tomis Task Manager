@@ -1,0 +1,193 @@
+import csv
+
+
+class Task_Board:
+    def __init__(self, task, status):
+        self.__task = task
+        self.__status = status
+        
+    @property
+    def task(self):
+        return self.__task
+    
+    @property
+    def status(self):
+        return self.__status
+    
+    @status.setter
+    def status(self,status):
+        self.__status = 'Completed'
+         
+    def __str__(self):
+        return '> '+ self.task + '|'  '   Status:  ' + self.status
+    
+
+####################################################
+
+def get_task_list_names():
+    task_lists = []
+    with open("Schedule.txt") as file:
+        for line in file:
+            line = line.replace("\n", "")
+            task_lists.append(line)
+    return task_lists
+
+def add_item(task__list):
+    task = input('Enter task: ')
+    task = Task_Board(task,' ')
+    task__list.append(task)
+    return task__list
+
+
+def remove_item(task__list):
+    show_tasklist(task__list)
+    number = int(input('Enter number: ')) - 1
+    task__list.pop(number)
+    return task__list
+
+    
+def saveitem(task__list):
+    saved = []
+    for Task_Board in task__list:
+        task = [Task_Board.task, Task_Board.status]
+        saved.append(task)
+    return saved
+    
+
+
+def savefile(X, saver):
+    with open (f'{X}.csv',"w", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerows(saver)
+
+
+
+def read_tasklist(FILENAME):
+    tasklist = []
+    with open(FILENAME, newline= '') as file:
+        reader = csv.reader(file)
+        for row in reader:
+            task = Task_Board(row[0],row[1])
+            tasklist.append(task)
+    return tasklist
+
+
+def show_tasklist(task__list):
+    print('TASK LIST')
+    for i in range(len(task__list)):
+        task = task__list[i]
+        print(str(i+1)+ ' ' , task)
+
+def update(task__list):
+    show_tasklist(task__list)
+    choice = 'choice'
+    complete = []
+    while choice != -1:
+        choice = int(input('select numbers , select 0 to end: '))-1
+        complete.append(choice)
+    complete.pop(-1)
+    
+    
+    for Task_Board in task__list:
+        for X in complete:
+            if Task_Board == task__list[X]:
+                Task_Board.status = 'Completed' 
+    return task__list  
+
+
+##################################################
+def show_title():
+    print("TOMI'S TASK MANAGER")
+    print()
+
+def show_menu():
+    print('COMMAND  MENU')
+    print('display - Display task list')
+    print('add - Add item to task list')
+    print('del - Delete item from task list')
+    print('update - Update completed tasks')
+    print('exit - Exit program')
+    print()
+    print()
+##################################################
+
+    
+          
+def main():
+        show_title()
+        show_menu()
+        print()
+
+        while True:
+            
+            select = get_task_list_names()
+            i = 1
+            for pick in select:
+                print(str(i) + '.' + pick)
+                i += 1
+            print()
+            
+            option = int(input('Options Number:  '))-1
+            choice = select[option]
+            
+            if choice == 'back':
+                print('Back to Command Menu')
+                
+            elif choice == 'new':
+                new = input('Add new schedule: ')
+                select.append(new)
+                
+                
+                joint = ''
+                for sche in select:
+                    joint +=sche +'\n'
+
+               # open('Schedule.txt', 'w')            To open new files
+                with open('Schedule.txt', 'w') as file:
+                    file.write(joint)
+               
+               
+                X = new
+                FILENAME = f'{X}.csv'
+                with open (f'{X}.csv',"w", newline="") as file:
+                     writer = csv.writer(file)
+                print('New schedule created')
+                continue
+            
+            elif choice in select:
+                X = choice
+                FILENAME = f'{X}.csv'
+                task__list = read_tasklist(FILENAME)
+            
+            else:
+              print('This schedule is not available at this time.')
+              continue
+            
+            
+            command = input('Command: ').lower()
+            if command == 'display':                            # CAUTION NO INDENTATION !!!
+                show_tasklist(task__list)
+                print()
+            elif command == 'add':
+                task__list = add_item(task__list)
+                saver = saveitem(task__list)
+                savefile(X, saver)
+            elif command == 'del':
+                task__list = remove_item(task__list)
+                saver = saveitem(task__list)
+                savefile(X, saver)
+            elif command == 'update':
+                task__list = update(task__list)
+                saver = saveitem(task__list)
+                savefile(X, saver)
+            elif command == 'exit':
+                print('Bye!')
+                break
+            else:
+                print('Not a valid command. Please try again')
+
+
+if __name__ == "__main__":
+    main()
+            
+        
